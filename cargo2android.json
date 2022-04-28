@@ -1,0 +1,12 @@
+{
+  "apex-available": [
+    "//apex_available:platform",
+    "com.android.virt"
+  ],
+  "dependencies": true,
+  "device": true,
+  "force-rlib": true,
+  "patch": "patches/Android.bp.patch",
+  "run": true,
+  "tests": true
+}
