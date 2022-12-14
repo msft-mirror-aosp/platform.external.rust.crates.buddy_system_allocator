@@ -1,17 +1,8 @@
 diff --git a/Android.bp b/Android.bp
-index 64d311b..bcae11e 100644
+index bbd9e06..6dae9e8 100644
 --- a/Android.bp
 +++ b/Android.bp
-@@ -22,7 +22,7 @@ rust_test {
-         "use_spin",
-     ],
-     rustlibs: [
--        "libspin",
-+        "libspin_nostd",
-     ],
- }
- 
-@@ -40,7 +40,7 @@ rust_library_rlib {
+@@ -61,7 +61,7 @@ rust_library_rlib {
          "use_spin",
      ],
      rustlibs: [
