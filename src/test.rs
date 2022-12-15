@@ -103,13 +103,13 @@ fn test_heap_alloc_and_free() {
 
 #[test]
 fn test_empty_frame_allocator() {
-    let mut frame = FrameAllocator::new();
+    let mut frame = FrameAllocator::<32>::new();
     assert!(frame.alloc(1).is_none());
 }
 
 #[test]
 fn test_frame_allocator_add() {
-    let mut frame = FrameAllocator::new();
+    let mut frame = FrameAllocator::<32>::new();
     assert!(frame.alloc(1).is_none());
 
     frame.insert(0..3);
@@ -122,8 +122,33 @@ fn test_frame_allocator_add() {
 }
 
 #[test]
+fn test_frame_allocator_allocate_large() {
+    let mut frame = FrameAllocator::<32>::new();
+    assert_eq!(frame.alloc(10_000_000_000), None);
+}
+
+#[test]
+fn test_frame_allocator_add_large_size_split() {
+    let mut frame = FrameAllocator::<32>::new();
+
+    frame.insert(0..10_000_000_000);
+
+    assert_eq!(frame.alloc(0x8000_0001), None);
+    assert_eq!(frame.alloc(0x8000_0000), Some(0x8000_0000));
+    assert_eq!(frame.alloc(0x8000_0000), Some(0x1_0000_0000));
+}
+
+#[test]
+fn test_frame_allocator_add_large_size() {
+    let mut frame = FrameAllocator::<33>::new();
+
+    frame.insert(0..10_000_000_000);
+    assert_eq!(frame.alloc(0x8000_0001), Some(0x1_0000_0000));
+}
+
+#[test]
 fn test_frame_allocator_alloc_and_free() {
-    let mut frame = FrameAllocator::new();
+    let mut frame = FrameAllocator::<32>::new();
     assert!(frame.alloc(1).is_none());
 
     frame.add_frame(0, 1024);
@@ -135,7 +160,7 @@ fn test_frame_allocator_alloc_and_free() {
 
 #[test]
 fn test_frame_allocator_alloc_and_free_complex() {
-    let mut frame = FrameAllocator::new();
+    let mut frame = FrameAllocator::<32>::new();
     frame.add_frame(100, 1024);
     for _ in 0..10 {
         let addr = frame.alloc(1).unwrap();
@@ -144,4 +169,26 @@ fn test_frame_allocator_alloc_and_free_complex() {
     let addr1 = frame.alloc(1).unwrap();
     let addr2 = frame.alloc(1).unwrap();
     assert_ne!(addr1, addr2);
+}
+
+#[test]
+fn test_frame_allocator_aligned() {
+    let mut frame = FrameAllocator::<32>::new();
+    frame.add_frame(1, 64);
+    assert_eq!(
+        frame.alloc_aligned(Layout::from_size_align(2, 4).unwrap()),
+        Some(4)
+    );
+    assert_eq!(
+        frame.alloc_aligned(Layout::from_size_align(2, 2).unwrap()),
+        Some(2)
+    );
+    assert_eq!(
+        frame.alloc_aligned(Layout::from_size_align(2, 1).unwrap()),
+        Some(8)
+    );
+    assert_eq!(
+        frame.alloc_aligned(Layout::from_size_align(1, 16).unwrap()),
+        Some(16)
+    );
 }
