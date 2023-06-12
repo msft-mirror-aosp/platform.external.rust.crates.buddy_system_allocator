@@ -22,7 +22,6 @@ license {
 
 rust_library_rlib {
     name: "libbuddy_system_allocator",
-    host_supported: true,
     crate_name: "buddy_system_allocator",
     cargo_env_compat: true,
     cargo_pkg_version: "0.9.0",
@@ -40,4 +39,13 @@ rust_library_rlib {
         "//apex_available:platform",
         "//apex_available:anyapex",
     ],
+    prefer_rlib: true,
+    no_stdlibs: true,
+    stdlibs: [
+        "liballoc.rust_sysroot",
+        "libcompiler_builtins.rust_sysroot",
+        "libcore.rust_sysroot",
+    ],
+    product_available: true,
+    vendor_available: true,
 }
