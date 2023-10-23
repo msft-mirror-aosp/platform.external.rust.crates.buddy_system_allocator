@@ -1,7 +1,10 @@
 {
   "alloc": true,
   "dependencies": true,
-  "dependency-suffix": "_nostd",
+  "dep-suffixes": {
+    "byteorder": "_nostd",
+    "spin": "_nostd"
+  },
   "device": true,
   "force-rlib": true,
   "no-host": true,
